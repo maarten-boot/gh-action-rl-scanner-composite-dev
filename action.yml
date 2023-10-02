@@ -1,4 +1,4 @@
-name: 'gh-action-rl-scanner-composite'
+name: 'gh-action-rl-scanner-composite-dev'
 author: 'ReversingLabs'
 description: 'Scan an artifact with ReversingLabs secure.software CLI'
 
@@ -10,14 +10,57 @@ inputs:
   artifact-to-scan:
     description: 'Path to the package file (artifact) you want to scan'
     required: true
-  ref-sha:
-    description: 'Reference SHA of the commit or a pull request'
-    required: false
-    default: ${{ github.event.pull_request.head.sha || github.sha }}
   report-path:
     description: 'Path to a directory where the reports will be saved (must be a new directory, with a path relative to the github.workspace)'
     required: false
     default: MyReportDir
+
+  rl-store:
+    description: 'Path to a directory where a rl-store has been initialized'
+    required: false
+    default: ""
+    type: string
+  rl-diff-with:
+    description: 'Perform a diff scan against the provided version'
+    required: false
+    default: ""
+    type: string
+  rl-package-url:
+    description: 'A package url to use for this scan'
+    required: false
+    default: ""
+    type: string
+  rl-verbose:
+    description: 'Make the scanner more verbose'
+    required: false
+    default: false
+    type: bool
+
+  rl-proxy-server:
+    description: 'An optional proxy server to use'
+    required: false
+    default: ""
+    type: string
+  rl-proxy-port:
+    description: 'An optional proxy server port to use'
+    required: false
+    default: ""
+    type: string
+  rl-proxy-user:
+    description: 'An optional proxy server user to use'
+    required: false
+    default: ""
+    type: string
+  rl-proxy-password:
+    description: 'An optional proxy server password to use'
+    required: false
+    default: ""
+    type: string
+
+  ref-sha:
+    description: 'Reference SHA of the commit or a pull request'
+    required: false
+    default: ${{ github.event.pull_request.head.sha || github.sha }}
 
 outputs:
   description:
@@ -40,10 +83,25 @@ runs:
 
     # -------------------------------------------
     # Run the reversinglabs/rl-scanner
-    - name: Scan with rl-scanner
+    - name: ReversingLabs apply rl-scanner to the build artifact
       id: scan
-      shell: bash
-      run: $GITHUB_ACTION_PATH/doScanAction.sh -f "${{ inputs.artifact-to-scan }}" -r "${{ inputs.report-path }}"
+
+      env:
+        RLSECURE_ENCODED_LICENSE: ${{ secrets.RLSECURE_ENCODED_LICENSE }}
+        RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+
+      uses: maarten-boot/gh-action-rl-scanner-only-dev@v1.0.19
+      with:
+        artifact-to-scan: ${{ inputs.artifact-to-scan }}
+        report-path: ${{ inputs.report-path }}
+        rl-verbose: ${{ inputs.rl-verbose }}
+        rl-store: ${{ inputs.rl-store }}
+        rl-package-url: ${{ inputs.rl-package-url }}
+        rl-diff-with: ${{ inputs.rl-diff-with }}
+        rl-proxy-server: ${{ inputs.rl-proxy-server }}
+        rl-proxy-port: ${{ inputs.rl-proxy-port }}
+        rl-proxy-user: ${{ inputs.rl-proxy-user }}
+        rl-proxy-password: ${{ inputs.rl-proxy-password }}
 
     # -------------------------------------
     # Upload the secure.software report to GitHub
