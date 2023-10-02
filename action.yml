@@ -58,7 +58,7 @@ inputs:
     type: string
 
   ref-sha:
-    description: 'Reference SHA of the commit or a pull request'
+    description: 'Reference SHA of the commit or pull request'
     required: false
     default: ${{ github.event.pull_request.head.sha || github.sha }}
 
@@ -108,8 +108,7 @@ runs:
     # Note: It is currently not possible to get the URL for the uploaded asset
     - name: Upload the rl-scanner report
       if: success() || failure()
-      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-
+      uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
       with:
         name: "report-${{ inputs.ref-sha }}"
         path: "${{ inputs.report-path }}"
@@ -118,8 +117,7 @@ runs:
     # Upload the secure.software SARIF report to GitHub
     - name: Upload the SARIF report
       if: success() || failure()
-      uses: github/codeql-action/upload-sarif@cdcdbb579706841c47f7063dda365e292e5cad7a # v2.13.4
-
+      uses: github/codeql-action/upload-sarif@8e0b1c74b1d5a0077b04d064c76ee714d3da7637 # v2.14.6
       with:
         sarif_file: "${{ inputs.report-path }}/report.sarif.json"
         category: rl-secure-scanner
@@ -129,7 +127,6 @@ runs:
     - name: Set the analysis status
       if: success() || failure()
       uses: ouzi-dev/commit-status-updater@219d3f932547cad092e384c7a36bf4d963739c35 # v2.0.1
-
       with:
         addHoldComment: "true"
         description: ${{ steps.scan.outputs.description }}
