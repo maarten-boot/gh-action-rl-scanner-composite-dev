@@ -85,11 +85,6 @@ runs:
     # Run the reversinglabs/rl-scanner
     - name: ReversingLabs apply rl-scanner to the build artifact
       id: scan
-
-      env:
-        RLSECURE_ENCODED_LICENSE: ${{ secrets.RLSECURE_ENCODED_LICENSE }}
-        RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
-
       uses: maarten-boot/gh-action-rl-scanner-only-dev@v1.0.19
       with:
         artifact-to-scan: ${{ inputs.artifact-to-scan }}
