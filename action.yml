@@ -82,10 +82,9 @@ runs:
         addHoldComment: "true"
 
     # -------------------------------------------
-    # Run the reversinglabs/rl-scanner
+    # Run the reversinglabs/rl-scanner using the scan only action
     - name: ReversingLabs apply rl-scanner to the build artifact
       id: scan
-      # uses: maarten-boot/gh-action-rl-scanner-only-dev@v1.0.19
       uses: reversinglabs/gh-action-rl-scanner-only@v1
       with:
         artifact-to-scan: ${{ inputs.artifact-to-scan }}
